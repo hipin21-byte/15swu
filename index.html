@@ -12,7 +12,7 @@
     <div class="header-inner">
       <span class="eyebrow">서원대학교 도서관</span>
       <h1>학술전자정보박람회<br>참여업체 입력양식</h1>
-      <p class="header-sub">참석자 정보, 주차등록, 음료 및 점심 메뉴를 입력해 주세요.</p>
+      <p class="header-sub">참석자 정보, 주차등록, 음료 및 식사 정보를 입력해 주세요.</p>
     </div>
   </header>
 
@@ -41,15 +41,36 @@
             </select>
           </div>
           <div class="field">
-            <label for="attendeeName" class="required">참석자명</label>
-            <input id="attendeeName" name="attendeeName" type="text" maxlength="40" placeholder="예: 홍길동" required>
+            <div class="field-label-row">
+              <label for="attendee-input1" class="required">참석자명</label>
+              <button id="addAttendeeBtn" class="add-button" type="button" aria-label="참석자 입력란 추가">
+                <span aria-hidden="true">＋</span> 인원 추가
+              </button>
+            </div>
+            <div id="attendeeList" class="dynamic-list" aria-live="polite">
+              <div class="dynamic-item">
+                <input id="attendee-input1" class="attendee-input" type="text" maxlength="40" placeholder="예: 홍길동" aria-label="참석자명 1" required>
+              </div>
+            </div>
+            <input id="attendeeName" name="attendeeName" type="hidden">
+            <div class="help">참석자가 여러 명이면 ‘인원 추가’를 눌러 입력해 주세요.</div>
           </div>
         </div>
 
         <div class="field">
-          <label for="vehicleNumber">주차등록 차량번호</label>
-          <input id="vehicleNumber" name="vehicleNumber" type="text" maxlength="20" placeholder="예: 12가3456">
-          <div class="help">주차등록이 필요하지 않은 경우 비워두셔도 됩니다.</div>
+          <div class="field-label-row">
+            <label for="vehicle-input1">주차등록 차량번호</label>
+            <button id="addVehicleBtn" class="add-button" type="button" aria-label="차량번호 입력란 추가">
+              <span aria-hidden="true">＋</span> 차량 추가
+            </button>
+          </div>
+          <div id="vehicleList" class="dynamic-list" aria-live="polite">
+            <div class="dynamic-item">
+              <input id="vehicle-input1" class="vehicle-input" type="text" maxlength="20" placeholder="예: 12가3456" aria-label="차량번호 1">
+            </div>
+          </div>
+          <input id="vehicleNumber" name="vehicleNumber" type="hidden">
+          <div class="help">추가 차량은 ‘차량 추가’를 눌러 입력하고, 주차등록이 필요하지 않으면 비워두세요.</div>
         </div>
       </section>
 
@@ -92,10 +113,22 @@
 
       <section class="card">
         <h2 class="section-title">4. 저녁식사 장소</h2>
-        <div class="info-card">
-          <strong>원주식당</strong>
-          <div class="info-row">충북 청주시 서원구 남들로 40</div>
-          <div class="info-row">043-292-5688</div>
+        <div class="location-grid">
+          <div class="info-card location-info">
+            <strong>원주식당</strong>
+            <div class="info-row">충북 청주시 서원구 남들로 40</div>
+            <div class="info-row">043-292-5688</div>
+            <a class="map-link" href="https://map.kakao.com/link/search/%EC%9B%90%EC%A3%BC%EC%8B%9D%EB%8B%B9%20%EC%B6%A9%EB%B6%81%20%EC%B2%AD%EC%A3%BC%EC%8B%9C%20%EC%84%9C%EC%9B%90%EA%B5%AC%20%EB%82%A8%EB%93%A4%EB%A1%9C%2040" target="_blank" rel="noopener noreferrer">카카오맵에서 크게 보기 <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="map-embed">
+            <iframe
+              title="원주식당 위치 지도"
+              src="https://www.google.com/maps?q=%EC%B6%A9%EB%B6%81%20%EC%B2%AD%EC%A3%BC%EC%8B%9C%20%EC%84%9C%EC%9B%90%EA%B5%AC%20%EB%82%A8%EB%93%A4%EB%A1%9C%2040&amp;output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen>
+            </iframe>
+          </div>
         </div>
       </section>
 
