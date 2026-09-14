@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#103b70">
+  <title>학술전자정보박람회 관리자</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <span class="eyebrow">관리자 전용</span>
+      <h1>참여업체 응답 현황</h1>
+      <p class="header-sub">Google 스프레드시트에 저장된 응답을 조회합니다.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="configWarning" class="notice">
+      아직 Google Apps Script 웹앱 주소가 설정되지 않았습니다. config.js를 먼저 수정해 주세요.
+    </div>
+
+    <section class="card" id="loginCard">
+      <h2 class="section-title">관리자 인증</h2>
+      <p class="section-desc">Apps Script의 ADMIN_KEY와 동일한 관리자 비밀번호를 입력하세요.</p>
+      <form id="adminLogin" class="grid-2">
+        <div class="field">
+          <label for="adminKey" class="required">관리자 비밀번호</label>
+          <input id="adminKey" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-end">
+          <button class="btn btn-primary" type="submit" style="width:100%">응답 불러오기</button>
+        </div>
+      </form>
+      <div id="adminStatus" class="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section id="dashboard" style="display:none">
+      <div class="stats">
+        <div class="stat"><div class="stat-label">총 응답</div><div id="statTotal" class="stat-value">0</div></div>
+        <div class="stat"><div class="stat-label">주차등록</div><div id="statVehicle" class="stat-value">0</div></div>
+        <div class="stat"><div class="stat-label">아이스아메리카노</div><div id="statIceAmericano" class="stat-value">0</div></div>
+        <div class="stat"><div class="stat-label">점심 메뉴 종류</div><div id="statLunchKinds" class="stat-value">0</div></div>
+      </div>
+
+      <section class="card">
+        <div class="admin-toolbar">
+          <div class="field wide" style="margin:0">
+            <label for="searchText">검색</label>
+            <input id="searchText" type="text" placeholder="소속, 참석자명, 차량번호 검색">
+          </div>
+          <div class="field" style="margin:0">
+            <label for="companyFilter">소속 필터</label>
+            <select id="companyFilter"><option value="">전체</option></select>
+          </div>
+          <button id="refreshBtn" class="btn btn-secondary" type="button">새로고침</button>
+          <button id="csvBtn" class="btn btn-ghost" type="button">CSV 다운로드</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>제출시각</th>
+                <th>소속</th>
+                <th>참석자명</th>
+                <th>차량번호</th>
+                <th>음료</th>
+                <th>점심식사</th>
+              </tr>
+            </thead>
+            <tbody id="responseBody"></tbody>
+          </table>
+          <div id="emptyState" class="empty" style="display:none">조건에 맞는 응답이 없습니다.</div>
+        </div>
+      </section>
+    </section>
+
+    <div class="footer"><a href="index.html">참여업체 입력 페이지로 돌아가기</a></div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

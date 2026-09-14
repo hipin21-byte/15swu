@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#103b70">
+  <title>학술전자정보박람회 참여업체 입력양식</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <span class="eyebrow">서원대학교 도서관</span>
+      <h1>학술전자정보박람회<br>참여업체 입력양식</h1>
+      <p class="header-sub">참석자 정보, 주차등록, 음료 및 점심 메뉴를 입력해 주세요.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="configWarning" class="notice">
+      아직 Google Apps Script 웹앱 주소가 설정되지 않았습니다. 관리자에게 문의해 주세요.
+    </div>
+
+    <form id="vendorForm" autocomplete="off" target="submitFrame" method="post">
+      <section class="card">
+        <h2 class="section-title">1. 참석자 정보</h2>
+        <p class="section-desc">업체와 참석자 정보를 입력합니다.</p>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="company" class="required">소속</label>
+            <select id="company" name="company" required>
+              <option value="">업체를 선택하세요</option>
+              <option>메가콘텐츠</option>
+              <option>아람미디어</option>
+              <option>아이티컴퍼니</option>
+              <option>엡스코코리아</option>
+              <option>참정보</option>
+              <option>학술교육원</option>
+              <option>한국학술정보</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="attendeeName" class="required">참석자명</label>
+            <input id="attendeeName" name="attendeeName" type="text" maxlength="40" placeholder="예: 홍길동" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="vehicleNumber">주차등록 차량번호</label>
+          <input id="vehicleNumber" name="vehicleNumber" type="text" maxlength="20" placeholder="예: 12가3456">
+          <div class="help">주차등록이 필요하지 않은 경우 비워두셔도 됩니다.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">2. 음료 선택</h2>
+        <p class="section-desc">제공받을 음료 1가지를 선택해 주세요.</p>
+        <div class="radio-grid">
+          <label class="radio-card"><input type="radio" name="beverage" value="아이스아메리카노" required> 아이스아메리카노</label>
+          <label class="radio-card"><input type="radio" name="beverage" value="Hot아메리카노"> Hot아메리카노</label>
+          <label class="radio-card"><input type="radio" name="beverage" value="아이스티"> 아이스티</label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">3. 점심식사 선택</h2>
+        <p class="section-desc">점심 메뉴 1가지를 선택해 주세요.</p>
+        <div class="menu-grid">
+          <label class="menu-card">
+            <input type="radio" name="lunch" value="더덕 장어구이 바싹불고기 한상" required>
+            <span class="menu-title">더덕 장어구이 바싹불고기 한상</span>
+            <span class="menu-note">한상 메뉴</span>
+          </label>
+          <label class="menu-card">
+            <input type="radio" name="lunch" value="울릉도 오징어 석갈비 한상">
+            <span class="menu-title">울릉도 오징어 석갈비 한상</span>
+            <span class="menu-note">한상 메뉴</span>
+          </label>
+          <label class="menu-card">
+            <input type="radio" name="lunch" value="매콤낙지 석갈비 한상">
+            <span class="menu-title">매콤낙지 석갈비 한상</span>
+            <span class="menu-note">한상 메뉴</span>
+          </label>
+          <label class="menu-card">
+            <input type="radio" name="lunch" value="매콤낙지 파래불고기 한상">
+            <span class="menu-title">매콤낙지 파래불고기 한상</span>
+            <span class="menu-note">한상 메뉴</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">4. 저녁식사 장소</h2>
+        <div class="info-card">
+          <strong>원주식당</strong>
+          <div class="info-row">충북 청주시 서원구 남들로 40</div>
+          <div class="info-row">043-292-5688</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">5. 학생 방문 인증코드 안내</h2>
+        <p class="section-desc">아래 코드는 업체 응답 제출용이 아니라, 박람회 당일 학생이 부스를 방문했을 때 업체에서 학생의 참여를 인증해 주는 참고용 코드입니다.</p>
+        <div class="info-card code-guide">
+          <div class="info-row"><strong>선택한 업체 인증코드</strong></div>
+          <div id="selectedCompanyCode" class="company-code">소속을 선택하면 해당 업체의 코드가 표시됩니다.</div>
+        </div>
+
+        <input type="hidden" name="action" value="submit">
+        <input type="hidden" id="submissionId" name="submissionId" value="">
+        <div class="actions">
+          <button type="reset" class="btn btn-ghost">초기화</button>
+          <button id="submitBtn" type="submit" class="btn btn-primary">응답 제출</button>
+        </div>
+        <div id="formStatus" class="status" role="status" aria-live="polite"></div>
+      </section>
+    </form>
+
+    <iframe name="submitFrame" id="submitFrame" title="제출 처리" style="display:none"></iframe>
+
+    <section class="card">
+      <h3>담당자</h3>
+      <div class="contact">
+        <span>학술정보팀 이관엽</span>
+        <span>010-6651-2188</span>
+      </div>
+    </section>
+
+    <div class="footer">
+      <span>관리자 전용: </span><a href="admin.html">응답 현황 보기</a>
+    </div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
