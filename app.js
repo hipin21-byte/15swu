@@ -6,6 +6,13 @@
   const warning = document.getElementById('configWarning');
   const companySelect = document.getElementById('company');
   const selectedCompanyCode = document.getElementById('selectedCompanyCode');
+  const attendeeList = document.getElementById('attendeeList');
+  const vehicleList = document.getElementById('vehicleList');
+  const addAttendeeBtn = document.getElementById('addAttendeeBtn');
+  const addVehicleBtn = document.getElementById('addVehicleBtn');
+  const attendeePayload = document.getElementById('attendeeName');
+  const vehiclePayload = document.getElementById('vehicleNumber');
+  const MAX_ADDITIONAL_FIELDS = 10;
 
   // 학생이 업체 부스를 방문했을 때 업체에서 학생 참여를 인증하는 참고용 코드입니다.
   const COMPANY_CODES = {
@@ -34,6 +41,80 @@
   function normalizeVehicle(v) {
     return v.trim().toUpperCase().replace(/\s+/g, '');
   }
+
+  function refreshDynamicList(list, inputClass, labelText) {
+    const items = [...list.querySelectorAll('.dynamic-item')];
+    items.forEach((item, index) => {
+      const input = item.querySelector(`.${inputClass}`);
+      const position = index + 1;
+      input.id = `${inputClass}${position}`;
+      input.setAttribute('aria-label', `${labelText} ${position}`);
+
+      const existingRemove = item.querySelector('.remove-button');
+      if (items.length === 1) {
+        existingRemove?.remove();
+      } else if (!existingRemove) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-button';
+        removeBtn.textContent = '삭제';
+        removeBtn.setAttribute('aria-label', `${labelText} ${position} 입력란 삭제`);
+        removeBtn.addEventListener('click', () => {
+          item.remove();
+          refreshDynamicList(list, inputClass, labelText);
+        });
+        item.appendChild(removeBtn);
+      } else {
+        existingRemove.setAttribute('aria-label', `${labelText} ${position} 입력란 삭제`);
+      }
+    });
+  }
+
+  function addDynamicField({ list, inputClass, labelText, placeholder, maxLength, required }) {
+    const currentCount = list.querySelectorAll('.dynamic-item').length;
+    if (currentCount >= MAX_ADDITIONAL_FIELDS) {
+      showStatus('error', `${labelText}은 최대 ${MAX_ADDITIONAL_FIELDS}개까지 입력할 수 있습니다.`);
+      return;
+    }
+
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = inputClass;
+    input.maxLength = maxLength;
+    input.placeholder = placeholder;
+    input.required = required;
+    item.appendChild(input);
+    list.appendChild(item);
+    refreshDynamicList(list, inputClass, labelText);
+    input.focus();
+  }
+
+  function resetDynamicLists() {
+    [...attendeeList.querySelectorAll('.dynamic-item')].slice(1).forEach(item => item.remove());
+    [...vehicleList.querySelectorAll('.dynamic-item')].slice(1).forEach(item => item.remove());
+    refreshDynamicList(attendeeList, 'attendee-input', '참석자명');
+    refreshDynamicList(vehicleList, 'vehicle-input', '차량번호');
+  }
+
+  addAttendeeBtn.addEventListener('click', () => addDynamicField({
+    list: attendeeList,
+    inputClass: 'attendee-input',
+    labelText: '참석자명',
+    placeholder: '추가 참석자명',
+    maxLength: 40,
+    required: true
+  }));
+
+  addVehicleBtn.addEventListener('click', () => addDynamicField({
+    list: vehicleList,
+    inputClass: 'vehicle-input',
+    labelText: '차량번호',
+    placeholder: '추가 차량번호',
+    maxLength: 20,
+    required: false
+  }));
 
   function createSubmissionId() {
     if (window.crypto?.randomUUID) return crypto.randomUUID();
@@ -73,7 +154,14 @@
   }
 
   companySelect.addEventListener('change', updateCompanyCode);
-  form.addEventListener('reset', () => setTimeout(updateCompanyCode, 0));
+  form.addEventListener('reset', () => setTimeout(() => {
+    resetDynamicLists();
+    updateCompanyCode();
+    status.className = 'status';
+    status.textContent = '';
+  }, 0));
+  refreshDynamicList(attendeeList, 'attendee-input', '참석자명');
+  refreshDynamicList(vehicleList, 'vehicle-input', '차량번호');
   updateCompanyCode();
 
   form.addEventListener('submit', (e) => {
@@ -84,12 +172,17 @@
     }
 
     const company = companySelect.value;
-    const attendeeName = document.getElementById('attendeeName').value.trim();
-    const vehicle = document.getElementById('vehicleNumber');
+    const attendees = [...document.querySelectorAll('.attendee-input')]
+      .map(input => input.value.trim())
+      .filter(Boolean);
+    const vehicles = [...document.querySelectorAll('.vehicle-input')]
+      .map(input => normalizeVehicle(input.value))
+      .filter(Boolean);
 
-    if (!company || !attendeeName) return;
+    if (!company || !attendees.length) return;
 
-    vehicle.value = normalizeVehicle(vehicle.value);
+    attendeePayload.value = attendees.join(' / ');
+    vehiclePayload.value = [...new Set(vehicles)].join(' / ');
     submissionId = createSubmissionId();
     document.getElementById('submissionId').value = submissionId;
     submitting = true;
