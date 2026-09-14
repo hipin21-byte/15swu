@@ -37,6 +37,16 @@
       .replaceAll("'", '&#039;');
   }
 
+  function splitMultiValue(value) {
+    return String(value || '').split(/\s*\/\s*/).map(v => v.trim()).filter(Boolean);
+  }
+
+  function renderMultiValue(value, emptyValue = '-') {
+    const items = splitMultiValue(value);
+    if (!items.length) return escapeHtml(emptyValue);
+    return `<span class="multi-value">${items.map(escapeHtml).join('<br>')}</span>`;
+  }
+
   // Apps Script ContentService와 GitHub Pages 간 CORS 이슈를 피하기 위해 JSONP를 사용합니다.
   function loadJsonp(adminKey) {
     return new Promise((resolve, reject) => {
@@ -69,7 +79,8 @@
 
   function updateStats(data) {
     document.getElementById('statTotal').textContent = data.length;
-    document.getElementById('statVehicle').textContent = data.filter(r => r.vehicleNumber).length;
+    document.getElementById('statAttendee').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.attendeeName).length, 0);
+    document.getElementById('statVehicle').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.vehicleNumber).length, 0);
     document.getElementById('statIceAmericano').textContent = data.filter(r => r.beverage === '아이스아메리카노').length;
     document.getElementById('statLunchKinds').textContent = new Set(data.map(r => r.lunch).filter(Boolean)).size;
   }
@@ -98,8 +109,8 @@
       <tr>
         <td>${escapeHtml(r.timestamp)}</td>
         <td><span class="badge">${escapeHtml(r.company)}</span></td>
-        <td>${escapeHtml(r.attendeeName)}</td>
-        <td>${escapeHtml(r.vehicleNumber || '-')}</td>
+        <td>${renderMultiValue(r.attendeeName)}</td>
+        <td>${renderMultiValue(r.vehicleNumber)}</td>
         <td>${escapeHtml(r.beverage)}</td>
         <td>${escapeHtml(r.lunch)}</td>
       </tr>`).join('');
