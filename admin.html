@@ -46,6 +46,50 @@
         <div class="stat"><div class="stat-label">점심 메뉴 종류</div><div id="statLunchKinds" class="stat-value">0</div></div>
       </div>
 
+      <section class="card summary-tabs-card">
+        <div class="admin-tabs" role="tablist" aria-label="신청 현황 요약">
+          <button id="tabBtnVehicles" class="tab-button active" type="button" role="tab" aria-selected="true" aria-controls="tabVehicles" data-tab="vehicles">차량번호</button>
+          <button id="tabBtnBeverages" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tabBeverages" data-tab="beverages">음료</button>
+          <button id="tabBtnLunches" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tabLunches" data-tab="lunches">점심</button>
+          <button id="tabBtnDinner" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tabDinner" data-tab="dinner">저녁식사</button>
+        </div>
+
+        <div id="tabVehicles" class="summary-panel" role="tabpanel" aria-labelledby="tabBtnVehicles" data-panel="vehicles">
+          <div class="summary-heading">
+            <h2 class="section-title">차량번호 목록</h2>
+            <span id="vehicleSummaryCount" class="summary-total">총 0대</span>
+          </div>
+          <div class="table-wrap compact-table-wrap">
+            <table class="compact-table">
+              <thead><tr><th>소속</th><th>차량번호</th></tr></thead>
+              <tbody id="vehicleSummaryBody"></tbody>
+            </table>
+            <div id="vehicleSummaryEmpty" class="empty" style="display:none">등록된 차량이 없습니다.</div>
+          </div>
+        </div>
+
+        <div id="tabBeverages" class="summary-panel" role="tabpanel" aria-labelledby="tabBtnBeverages" data-panel="beverages" hidden>
+          <div class="summary-heading"><h2 class="section-title">음료별 신청 수량</h2></div>
+          <div id="beverageSummary" class="count-grid"></div>
+        </div>
+
+        <div id="tabLunches" class="summary-panel" role="tabpanel" aria-labelledby="tabBtnLunches" data-panel="lunches" hidden>
+          <div class="summary-heading"><h2 class="section-title">점심 메뉴별 신청 수량</h2></div>
+          <div id="lunchSummary" class="count-grid lunch-count-grid"></div>
+        </div>
+
+        <div id="tabDinner" class="summary-panel" role="tabpanel" aria-labelledby="tabBtnDinner" data-panel="dinner" hidden>
+          <div class="summary-heading"><h2 class="section-title">업체별 저녁식사 참석인원</h2></div>
+          <div class="table-wrap compact-table-wrap">
+            <table class="compact-table dinner-summary-table">
+              <thead><tr><th>소속</th><th>참석</th><th>불참</th><th>미응답</th></tr></thead>
+              <tbody id="dinnerSummaryBody"></tbody>
+            </table>
+            <div id="dinnerSummaryEmpty" class="empty" style="display:none">응답 데이터가 없습니다.</div>
+          </div>
+        </div>
+      </section>
+
       <section class="card">
         <div class="admin-toolbar">
           <div class="field wide" style="margin:0">

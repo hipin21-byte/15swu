@@ -10,6 +10,25 @@
   const refreshBtn = document.getElementById('refreshBtn');
   const csvBtn = document.getElementById('csvBtn');
   const warning = document.getElementById('configWarning');
+  const tabButtons = [...document.querySelectorAll('.tab-button')];
+  const tabPanels = [...document.querySelectorAll('.summary-panel')];
+  const vehicleSummaryBody = document.getElementById('vehicleSummaryBody');
+  const vehicleSummaryEmpty = document.getElementById('vehicleSummaryEmpty');
+  const vehicleSummaryCount = document.getElementById('vehicleSummaryCount');
+  const beverageSummary = document.getElementById('beverageSummary');
+  const lunchSummary = document.getElementById('lunchSummary');
+  const dinnerSummaryBody = document.getElementById('dinnerSummaryBody');
+  const dinnerSummaryEmpty = document.getElementById('dinnerSummaryEmpty');
+
+  const BEVERAGE_OPTIONS = ['아이스아메리카노', 'Hot아메리카노', '아이스티', '선택안함'];
+  const LUNCH_OPTIONS = [
+    '더덕 장어구이 바싹불고기 한상',
+    '울릉도 오징어 석갈비 한상',
+    '매콤낙지 석갈비 한상',
+    '매콤낙지 파래불고기 한상',
+    '선택안함'
+  ];
+  const COMPANY_ORDER = ['서원대학교', '메가콘텐츠', '아람미디어', '아이티컴퍼니', '엡스코코리아', '참정보', '학술교육원', '한국학술정보'];
 
   const url = window.APP_CONFIG?.WEB_APP_URL || '';
   const configured = /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url);
@@ -47,6 +66,80 @@
     return `<span class="multi-value">${items.map(escapeHtml).join('<br>')}</span>`;
   }
 
+  function activateSummaryTab(tabName) {
+    tabButtons.forEach(button => {
+      const selected = button.dataset.tab === tabName;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+    });
+    tabPanels.forEach(panel => { panel.hidden = panel.dataset.panel !== tabName; });
+  }
+
+  function countValues(data, field) {
+    const counts = new Map();
+    data.forEach(row => {
+      splitMultiValue(row[field]).forEach(value => counts.set(value, (counts.get(value) || 0) + 1));
+    });
+    return counts;
+  }
+
+  function getVehicleEntries(data) {
+    const vehicles = new Map();
+    data.forEach(row => {
+      splitMultiValue(row.vehicleNumber).forEach(vehicleNumber => {
+        const key = vehicleNumber.replace(/\s+/g, '').toUpperCase();
+        if (!vehicles.has(key)) vehicles.set(key, { company: row.company, vehicleNumber: key });
+      });
+    });
+    return [...vehicles.values()];
+  }
+
+  function renderCountCards(container, options, counts) {
+    container.innerHTML = options.map(option => `
+      <div class="count-card${option === '선택안함' ? ' muted' : ''}">
+        <div class="count-label">${escapeHtml(option)}</div>
+        <div class="count-value">${counts.get(option) || 0}<span>개</span></div>
+      </div>`).join('');
+  }
+
+  function renderVehicleSummary(data) {
+    const vehicles = getVehicleEntries(data);
+    vehicles.sort((a, b) => a.company.localeCompare(b.company, 'ko') || a.vehicleNumber.localeCompare(b.vehicleNumber, 'ko'));
+    vehicleSummaryBody.innerHTML = vehicles.map(item => `
+      <tr><td><span class="badge">${escapeHtml(item.company)}</span></td><td class="vehicle-number">${escapeHtml(item.vehicleNumber)}</td></tr>`).join('');
+    vehicleSummaryCount.textContent = `총 ${vehicles.length}대`;
+    vehicleSummaryEmpty.style.display = vehicles.length ? 'none' : 'block';
+  }
+
+  function renderDinnerSummary(data) {
+    const companies = [...new Set([...COMPANY_ORDER, ...data.map(row => row.company).filter(Boolean)])];
+    const summaries = companies.map(company => {
+      const companyRows = data.filter(row => row.company === company);
+      const attendeeTotal = companyRows.reduce((sum, row) => sum + splitMultiValue(row.attendeeName).length, 0);
+      const responses = companyRows.flatMap(row => splitMultiValue(row.dinnerAttendance));
+      const attending = responses.filter(value => value === '참석').length;
+      const absent = responses.filter(value => value === '불참').length;
+      return { company, attendeeTotal, attending, absent, unanswered: Math.max(0, attendeeTotal - attending - absent) };
+    });
+
+    dinnerSummaryBody.innerHTML = summaries.map(item => `
+      <tr>
+        <td><span class="badge">${escapeHtml(item.company)}</span></td>
+        <td><strong>${item.attending}명</strong></td>
+        <td>${item.absent}명</td>
+        <td>${item.unanswered}명</td>
+      </tr>`).join('');
+    dinnerSummaryEmpty.style.display = data.length ? 'none' : 'block';
+  }
+
+  function renderSummaries(data) {
+    renderVehicleSummary(data);
+    renderCountCards(beverageSummary, BEVERAGE_OPTIONS, countValues(data, 'beverage'));
+    renderCountCards(lunchSummary, LUNCH_OPTIONS, countValues(data, 'lunch'));
+    renderDinnerSummary(data);
+  }
+
   // Apps Script ContentService와 GitHub Pages 간 CORS 이슈를 피하기 위해 JSONP를 사용합니다.
   function loadJsonp(adminKey) {
     return new Promise((resolve, reject) => {
@@ -80,7 +173,7 @@
   function updateStats(data) {
     document.getElementById('statTotal').textContent = data.length;
     document.getElementById('statAttendee').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.attendeeName).length, 0);
-    document.getElementById('statVehicle').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.vehicleNumber).length, 0);
+    document.getElementById('statVehicle').textContent = getVehicleEntries(data).length;
     document.getElementById('statDinner').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.dinnerAttendance).filter(v => v === '참석').length, 0);
     document.getElementById('statIceAmericano').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.beverage).filter(v => v === '아이스아메리카노').length, 0);
     document.getElementById('statLunchKinds').textContent = new Set(data.flatMap(r => splitMultiValue(r.lunch)).filter(v => v !== '선택안함')).size;
@@ -127,6 +220,7 @@
       rows = Array.isArray(payload.data) ? payload.data : [];
       dashboard.style.display = 'block';
       updateStats(rows);
+      renderSummaries(rows);
       buildCompanyFilter(rows);
       renderTable();
       showStatus('success', `응답 ${rows.length}건을 불러왔습니다.`);
@@ -145,6 +239,7 @@
   });
 
   refreshBtn.addEventListener('click', fetchRows);
+  tabButtons.forEach(button => button.addEventListener('click', () => activateSummaryTab(button.dataset.tab)));
   searchText.addEventListener('input', renderTable);
   companyFilter.addEventListener('change', renderTable);
 

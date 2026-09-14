@@ -259,11 +259,52 @@ tbody tr:hover { background: #f8fbff; }
 .multi-value { line-height: 1.8; }
 .empty { padding: 34px 10px; text-align: center; color: var(--muted); }
 .badge { display: inline-block; padding: 4px 8px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 800; }
+.summary-tabs-card { padding-top: 0; }
+.admin-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin: 0 -24px 22px;
+  padding: 14px 24px 12px;
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: thin;
+}
+.tab-button {
+  flex: 1;
+  min-width: 120px;
+  border: 1px solid #cbd8e7;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #f7f9fc;
+  color: #4a5d76;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.tab-button:hover { background: var(--brand-soft); color: var(--brand); }
+.tab-button.active { border-color: var(--brand); background: var(--brand); color: white; }
+.summary-panel[hidden] { display: none; }
+.summary-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.summary-heading .section-title { margin: 0; }
+.summary-total { color: var(--brand); font-size: 14px; font-weight: 800; }
+.compact-table-wrap { max-height: 360px; overflow: auto; }
+.compact-table { min-width: 420px; }
+.compact-table th, .compact-table td { padding: 10px 12px; }
+.vehicle-number { font-size: 16px; font-weight: 900; letter-spacing: .04em; }
+.count-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.count-card { border: 1px solid #d7e2ef; border-radius: 13px; padding: 15px; background: #f8fbff; }
+.count-card.muted { background: #f7f7f8; }
+.count-label { min-height: 42px; color: #3d5169; font-size: 14px; font-weight: 800; }
+.count-value { margin-top: 7px; color: var(--brand-strong); font-size: 28px; font-weight: 900; }
+.count-value span { margin-left: 3px; font-size: 13px; color: var(--muted); }
+.dinner-summary-table { min-width: 520px; }
 
 @media (max-width: 760px) {
   .site-header { padding-top: 26px; }
   .container { padding: 18px 12px 40px; }
   .card { padding: 18px; border-radius: 15px; }
+  .summary-tabs-card { padding-top: 0; }
+  .admin-tabs { margin: 0 -18px 18px; padding: 12px 18px 10px; }
+  .tab-button { min-width: 105px; }
   .grid-2, .menu-grid { grid-template-columns: 1fr; }
   .location-grid { grid-template-columns: 1fr; }
   .radio-grid { grid-template-columns: 1fr; }
