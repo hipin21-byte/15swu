@@ -8,6 +8,7 @@
   const selectedCompanyCode = document.getElementById('selectedCompanyCode');
   const attendeeList = document.getElementById('attendeeList');
   const vehicleList = document.getElementById('vehicleList');
+  const vehicleField = document.getElementById('vehicleField');
   const addAttendeeBtn = document.getElementById('addAttendeeBtn');
   const addVehicleBtn = document.getElementById('addVehicleBtn');
   const attendeePayload = document.getElementById('attendeeName');
@@ -155,6 +156,7 @@
         removeBtn.addEventListener('click', () => {
           group.remove();
           refreshSelectionList(list, type, labelText);
+          updateSelectionLabels();
         });
         heading.appendChild(removeBtn);
       } else {
@@ -175,6 +177,7 @@
     group.querySelectorAll('input[type="radio"]').forEach(radio => { radio.checked = false; });
     list.appendChild(group);
     refreshSelectionList(list, type, labelText);
+    updateSelectionLabels();
     group.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -193,16 +196,24 @@
       groups.pop().remove();
     }
     refreshSelectionList(dinnerList, 'dinner', '저녁식사', false);
-    updateDinnerLabels();
+    updateSelectionLabels();
   }
 
-  function updateDinnerLabels() {
+  function updateSelectionLabels() {
     const attendees = [...attendeeList.querySelectorAll('.attendee-input')];
-    [...dinnerList.querySelectorAll('.selection-group')].forEach((group, index) => {
-      const attendeeName = attendees[index]?.value.trim();
-      group.querySelector('.selection-group-heading strong').textContent = attendeeName
-        ? `${attendeeName} 저녁식사`
-        : `참석자 ${index + 1} 저녁식사`;
+    const sections = [
+      { list: beverageList, label: '음료' },
+      { list: lunchList, label: '점심 메뉴' },
+      { list: dinnerList, label: '저녁식사' }
+    ];
+
+    sections.forEach(({ list, label }) => {
+      [...list.querySelectorAll('.selection-group')].forEach((group, index) => {
+        const attendeeName = attendees[index]?.value.trim();
+        group.querySelector('.selection-group-heading strong').textContent = attendeeName
+          ? `${attendeeName} ${label}`
+          : `참석자 ${index + 1} ${label}`;
+      });
     });
   }
 
@@ -219,7 +230,7 @@
 
   addBeverageBtn.addEventListener('click', () => addSelectionGroup(beverageList, 'beverage', '음료'));
   addLunchBtn.addEventListener('click', () => addSelectionGroup(lunchList, 'lunch', '점심 메뉴'));
-  attendeeList.addEventListener('input', updateDinnerLabels);
+  attendeeList.addEventListener('input', updateSelectionLabels);
 
   function createSubmissionId() {
     if (window.crypto?.randomUUID) return crypto.randomUUID();
@@ -255,15 +266,35 @@
       selectedCompanyCode.textContent = '소속을 선택하면 해당 업체의 코드가 표시됩니다.';
       return;
     }
+    if (company === '서원대학교') {
+      selectedCompanyCode.textContent = '서원대학교 직원은 학생 방문 인증코드 대상이 아닙니다.';
+      return;
+    }
     selectedCompanyCode.textContent = `${company} : ${COMPANY_CODES[company] || '-'} `;
   }
 
-  companySelect.addEventListener('change', updateCompanyCode);
+  function updateCompanyMode() {
+    const isSeowonStaff = companySelect.value === '서원대학교';
+    vehicleField.hidden = isSeowonStaff;
+    if (isSeowonStaff) {
+      [...vehicleList.querySelectorAll('.dynamic-item')].slice(1).forEach(item => item.remove());
+      vehicleList.querySelectorAll('.vehicle-input').forEach(input => { input.value = ''; });
+      vehiclePayload.value = '';
+      refreshDynamicList(vehicleList, 'vehicle-input', '차량번호');
+    }
+  }
+
+  companySelect.addEventListener('change', () => {
+    updateCompanyCode();
+    updateCompanyMode();
+  });
   form.addEventListener('reset', () => setTimeout(() => {
     resetDynamicLists();
     resetSelectionList(beverageList, 'beverage', '음료');
     resetSelectionList(lunchList, 'lunch', '점심 메뉴');
+    updateSelectionLabels();
     updateCompanyCode();
+    updateCompanyMode();
   }, 0));
   refreshDynamicList(attendeeList, 'attendee-input', '참석자명');
   refreshDynamicList(vehicleList, 'vehicle-input', '차량번호');
@@ -271,6 +302,7 @@
   refreshSelectionList(lunchList, 'lunch', '점심 메뉴');
   syncDinnerChoices();
   updateCompanyCode();
+  updateCompanyMode();
 
   form.addEventListener('submit', (e) => {
     if (!configured) {
@@ -283,9 +315,11 @@
     const attendees = [...document.querySelectorAll('.attendee-input')]
       .map(input => input.value.trim())
       .filter(Boolean);
-    const vehicles = [...document.querySelectorAll('.vehicle-input')]
-      .map(input => normalizeVehicle(input.value))
-      .filter(Boolean);
+    const vehicles = company === '서원대학교'
+      ? []
+      : [...document.querySelectorAll('.vehicle-input')]
+        .map(input => normalizeVehicle(input.value))
+        .filter(Boolean);
     const beverages = getSelectionValues(beverageList);
     const lunches = getSelectionValues(lunchList);
     const dinners = getSelectionValues(dinnerList);

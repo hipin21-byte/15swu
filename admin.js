@@ -83,7 +83,7 @@
     document.getElementById('statVehicle').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.vehicleNumber).length, 0);
     document.getElementById('statDinner').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.dinnerAttendance).filter(v => v === '참석').length, 0);
     document.getElementById('statIceAmericano').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.beverage).filter(v => v === '아이스아메리카노').length, 0);
-    document.getElementById('statLunchKinds').textContent = new Set(data.flatMap(r => splitMultiValue(r.lunch))).size;
+    document.getElementById('statLunchKinds').textContent = new Set(data.flatMap(r => splitMultiValue(r.lunch)).filter(v => v !== '선택안함')).size;
   }
 
   function buildCompanyFilter(data) {

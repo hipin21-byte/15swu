@@ -24,13 +24,14 @@
     <form id="vendorForm" autocomplete="off" target="submitFrame" method="post">
       <section class="card">
         <h2 class="section-title">1. 참석자 정보</h2>
-        <p class="section-desc">업체와 참석자 정보를 입력합니다.</p>
+        <p class="section-desc">소속과 참석자 정보를 입력합니다.</p>
 
         <div class="grid-2">
           <div class="field">
             <label for="company" class="required">소속</label>
             <select id="company" name="company" required>
-              <option value="">업체를 선택하세요</option>
+              <option value="">소속을 선택하세요</option>
+              <option>서원대학교</option>
               <option>메가콘텐츠</option>
               <option>아람미디어</option>
               <option>아이티컴퍼니</option>
@@ -57,7 +58,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div id="vehicleField" class="field">
           <div class="field-label-row">
             <label for="vehicle-input1">주차등록 차량번호</label>
             <button id="addVehicleBtn" class="add-button" type="button" aria-label="차량번호 입력란 추가">
@@ -87,10 +88,11 @@
         <div id="beverageList" class="selection-list" aria-live="polite">
           <div class="selection-group">
             <div class="selection-group-heading"><strong>음료 1</strong></div>
-            <div class="radio-grid">
+            <div class="radio-grid beverage-options">
               <label class="radio-card"><input type="radio" name="beverage-choice-1" value="아이스아메리카노" required> 아이스아메리카노</label>
               <label class="radio-card"><input type="radio" name="beverage-choice-1" value="Hot아메리카노"> Hot아메리카노</label>
               <label class="radio-card"><input type="radio" name="beverage-choice-1" value="아이스티"> 아이스티</label>
+              <label class="radio-card no-choice"><input type="radio" name="beverage-choice-1" value="선택안함"> 선택안함</label>
             </div>
           </div>
         </div>
@@ -130,6 +132,11 @@
                 <input type="radio" name="lunch-choice-1" value="매콤낙지 파래불고기 한상">
                 <span class="menu-title">매콤낙지 파래불고기 한상</span>
                 <span class="menu-note">한상 메뉴</span>
+              </label>
+              <label class="menu-card no-choice">
+                <input type="radio" name="lunch-choice-1" value="선택안함">
+                <span class="menu-title">선택안함</span>
+                <span class="menu-note">점심식사를 신청하지 않습니다.</span>
               </label>
             </div>
           </div>

@@ -157,6 +157,8 @@ input:focus, select:focus {
 }
 .radio-card:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
 .radio-card input { accent-color: var(--brand); }
+.beverage-options { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.no-choice { background: #f8fafc; color: #526279; }
 
 .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .menu-card {
@@ -169,6 +171,7 @@ input:focus, select:focus {
   background: #fff;
 }
 .menu-card:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
+.menu-card.no-choice { grid-column: 1 / -1; min-height: 76px; }
 .menu-card input { position: absolute; top: 16px; right: 16px; accent-color: var(--brand); }
 .menu-title { display: block; padding-right: 24px; font-weight: 800; }
 .menu-note { display: block; margin-top: 7px; color: var(--muted); font-size: 13px; }
@@ -264,6 +267,7 @@ tbody tr:hover { background: #f8fbff; }
   .grid-2, .menu-grid { grid-template-columns: 1fr; }
   .location-grid { grid-template-columns: 1fr; }
   .radio-grid { grid-template-columns: 1fr; }
+  .beverage-options { grid-template-columns: 1fr 1fr; }
   .dinner-options { grid-template-columns: 1fr 1fr; }
   .section-heading-row { align-items: center; }
   .admin-toolbar { grid-template-columns: 1fr 1fr; }
