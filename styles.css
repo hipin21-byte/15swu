@@ -294,8 +294,11 @@ tbody tr:hover { background: #f8fbff; }
 .count-card { border: 1px solid #d7e2ef; border-radius: 13px; padding: 15px; background: #f8fbff; }
 .count-card.muted { background: #f7f7f8; }
 .count-label { min-height: 42px; color: #3d5169; font-size: 14px; font-weight: 800; }
+.count-label small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 700; }
 .count-value { margin-top: 7px; color: var(--brand-strong); font-size: 28px; font-weight: 900; }
 .count-value span { margin-left: 3px; font-size: 13px; color: var(--muted); }
+.dinner-total-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 14px; }
+.count-card.total-card { border-color: #aac7e7; background: var(--brand-soft); }
 .dinner-summary-table { min-width: 520px; }
 
 @media (max-width: 760px) {
@@ -305,6 +308,7 @@ tbody tr:hover { background: #f8fbff; }
   .summary-tabs-card { padding-top: 0; }
   .admin-tabs { margin: 0 -18px 18px; padding: 12px 18px 10px; }
   .tab-button { min-width: 105px; }
+  .dinner-total-grid { grid-template-columns: 1fr; }
   .grid-2, .menu-grid { grid-template-columns: 1fr; }
   .location-grid { grid-template-columns: 1fr; }
   .radio-grid { grid-template-columns: 1fr; }

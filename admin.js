@@ -17,6 +17,7 @@
   const vehicleSummaryCount = document.getElementById('vehicleSummaryCount');
   const beverageSummary = document.getElementById('beverageSummary');
   const lunchSummary = document.getElementById('lunchSummary');
+  const dinnerTotals = document.getElementById('dinnerTotals');
   const dinnerSummaryBody = document.getElementById('dinnerSummaryBody');
   const dinnerSummaryEmpty = document.getElementById('dinnerSummaryEmpty');
 
@@ -122,6 +123,26 @@
       const absent = responses.filter(value => value === '불참').length;
       return { company, attendeeTotal, attending, absent, unanswered: Math.max(0, attendeeTotal - attending - absent) };
     });
+
+    const seowonAttending = summaries.find(item => item.company === '서원대학교')?.attending || 0;
+    const vendorAttending = summaries
+      .filter(item => item.company !== '서원대학교')
+      .reduce((sum, item) => sum + item.attending, 0);
+    const totalAttending = seowonAttending + vendorAttending;
+
+    dinnerTotals.innerHTML = `
+      <div class="count-card total-card">
+        <div class="count-label">전체 저녁식사 참석</div>
+        <div class="count-value">${totalAttending}<span>명</span></div>
+      </div>
+      <div class="count-card">
+        <div class="count-label">서원대학교 참석</div>
+        <div class="count-value">${seowonAttending}<span>명</span></div>
+      </div>
+      <div class="count-card">
+        <div class="count-label">참여업체 참석 <small>(서원대 제외)</small></div>
+        <div class="count-value">${vendorAttending}<span>명</span></div>
+      </div>`;
 
     dinnerSummaryBody.innerHTML = summaries.map(item => `
       <tr>
