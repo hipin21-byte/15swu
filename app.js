@@ -12,6 +12,14 @@
   const addVehicleBtn = document.getElementById('addVehicleBtn');
   const attendeePayload = document.getElementById('attendeeName');
   const vehiclePayload = document.getElementById('vehicleNumber');
+  const beverageList = document.getElementById('beverageList');
+  const lunchList = document.getElementById('lunchList');
+  const addBeverageBtn = document.getElementById('addBeverageBtn');
+  const addLunchBtn = document.getElementById('addLunchBtn');
+  const beveragePayload = document.getElementById('beverage');
+  const lunchPayload = document.getElementById('lunch');
+  const dinnerList = document.getElementById('dinnerList');
+  const dinnerPayload = document.getElementById('dinnerAttendance');
   const MAX_ADDITIONAL_FIELDS = 10;
 
   // 학생이 업체 부스를 방문했을 때 업체에서 학생 참여를 인증하는 참고용 코드입니다.
@@ -60,8 +68,14 @@
         removeBtn.textContent = '삭제';
         removeBtn.setAttribute('aria-label', `${labelText} ${position} 입력란 삭제`);
         removeBtn.addEventListener('click', () => {
+          const removedIndex = [...list.querySelectorAll('.dynamic-item')].indexOf(item);
           item.remove();
           refreshDynamicList(list, inputClass, labelText);
+          if (inputClass === 'attendee-input') {
+            const dinnerGroups = [...dinnerList.querySelectorAll('.selection-group')];
+            dinnerGroups[removedIndex]?.remove();
+            syncDinnerChoices();
+          }
         });
         item.appendChild(removeBtn);
       } else {
@@ -88,6 +102,7 @@
     item.appendChild(input);
     list.appendChild(item);
     refreshDynamicList(list, inputClass, labelText);
+    if (inputClass === 'attendee-input') syncDinnerChoices();
     input.focus();
   }
 
@@ -96,6 +111,7 @@
     [...vehicleList.querySelectorAll('.dynamic-item')].slice(1).forEach(item => item.remove());
     refreshDynamicList(attendeeList, 'attendee-input', '참석자명');
     refreshDynamicList(vehicleList, 'vehicle-input', '차량번호');
+    syncDinnerChoices();
   }
 
   addAttendeeBtn.addEventListener('click', () => addDynamicField({
@@ -115,6 +131,95 @@
     maxLength: 20,
     required: false
   }));
+
+  function refreshSelectionList(list, type, labelText, allowRemove = true) {
+    const groups = [...list.querySelectorAll('.selection-group')];
+    groups.forEach((group, index) => {
+      const position = index + 1;
+      group.querySelector('.selection-group-heading strong').textContent = `${labelText} ${position}`;
+      group.querySelectorAll('input[type="radio"]').forEach((radio, radioIndex) => {
+        radio.name = `${type}-choice-${position}`;
+        radio.required = radioIndex === 0;
+      });
+
+      const heading = group.querySelector('.selection-group-heading');
+      const existingRemove = heading.querySelector('.selection-remove');
+      if (!allowRemove || groups.length === 1) {
+        existingRemove?.remove();
+      } else if (!existingRemove) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'selection-remove';
+        removeBtn.textContent = '삭제';
+        removeBtn.setAttribute('aria-label', `${labelText} ${position} 선택 항목 삭제`);
+        removeBtn.addEventListener('click', () => {
+          group.remove();
+          refreshSelectionList(list, type, labelText);
+        });
+        heading.appendChild(removeBtn);
+      } else {
+        existingRemove.setAttribute('aria-label', `${labelText} ${position} 선택 항목 삭제`);
+      }
+    });
+  }
+
+  function addSelectionGroup(list, type, labelText) {
+    const groups = list.querySelectorAll('.selection-group');
+    if (groups.length >= MAX_ADDITIONAL_FIELDS) {
+      showStatus('error', `${labelText}는 최대 ${MAX_ADDITIONAL_FIELDS}개까지 선택할 수 있습니다.`);
+      return;
+    }
+
+    const group = groups[0].cloneNode(true);
+    group.querySelector('.selection-remove')?.remove();
+    group.querySelectorAll('input[type="radio"]').forEach(radio => { radio.checked = false; });
+    list.appendChild(group);
+    refreshSelectionList(list, type, labelText);
+    group.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function syncDinnerChoices() {
+    const attendeeCount = attendeeList.querySelectorAll('.dynamic-item').length;
+    let groups = [...dinnerList.querySelectorAll('.selection-group')];
+
+    while (groups.length < attendeeCount) {
+      const group = groups[0].cloneNode(true);
+      group.querySelector('.selection-remove')?.remove();
+      group.querySelectorAll('input[type="radio"]').forEach(radio => { radio.checked = false; });
+      dinnerList.appendChild(group);
+      groups = [...dinnerList.querySelectorAll('.selection-group')];
+    }
+    while (groups.length > attendeeCount) {
+      groups.pop().remove();
+    }
+    refreshSelectionList(dinnerList, 'dinner', '저녁식사', false);
+    updateDinnerLabels();
+  }
+
+  function updateDinnerLabels() {
+    const attendees = [...attendeeList.querySelectorAll('.attendee-input')];
+    [...dinnerList.querySelectorAll('.selection-group')].forEach((group, index) => {
+      const attendeeName = attendees[index]?.value.trim();
+      group.querySelector('.selection-group-heading strong').textContent = attendeeName
+        ? `${attendeeName} 저녁식사`
+        : `참석자 ${index + 1} 저녁식사`;
+    });
+  }
+
+  function resetSelectionList(list, type, labelText) {
+    [...list.querySelectorAll('.selection-group')].slice(1).forEach(group => group.remove());
+    refreshSelectionList(list, type, labelText);
+  }
+
+  function getSelectionValues(list) {
+    return [...list.querySelectorAll('.selection-group')]
+      .map(group => group.querySelector('input[type="radio"]:checked')?.value || '')
+      .filter(Boolean);
+  }
+
+  addBeverageBtn.addEventListener('click', () => addSelectionGroup(beverageList, 'beverage', '음료'));
+  addLunchBtn.addEventListener('click', () => addSelectionGroup(lunchList, 'lunch', '점심 메뉴'));
+  attendeeList.addEventListener('input', updateDinnerLabels);
 
   function createSubmissionId() {
     if (window.crypto?.randomUUID) return crypto.randomUUID();
@@ -156,12 +261,15 @@
   companySelect.addEventListener('change', updateCompanyCode);
   form.addEventListener('reset', () => setTimeout(() => {
     resetDynamicLists();
+    resetSelectionList(beverageList, 'beverage', '음료');
+    resetSelectionList(lunchList, 'lunch', '점심 메뉴');
     updateCompanyCode();
-    status.className = 'status';
-    status.textContent = '';
   }, 0));
   refreshDynamicList(attendeeList, 'attendee-input', '참석자명');
   refreshDynamicList(vehicleList, 'vehicle-input', '차량번호');
+  refreshSelectionList(beverageList, 'beverage', '음료');
+  refreshSelectionList(lunchList, 'lunch', '점심 메뉴');
+  syncDinnerChoices();
   updateCompanyCode();
 
   form.addEventListener('submit', (e) => {
@@ -178,11 +286,26 @@
     const vehicles = [...document.querySelectorAll('.vehicle-input')]
       .map(input => normalizeVehicle(input.value))
       .filter(Boolean);
+    const beverages = getSelectionValues(beverageList);
+    const lunches = getSelectionValues(lunchList);
+    const dinners = getSelectionValues(dinnerList);
 
-    if (!company || !attendees.length) return;
+    if (!company || !attendees.length || !beverages.length || !lunches.length || !dinners.length) return;
+    if (beverages.length !== attendees.length || lunches.length !== attendees.length || dinners.length !== attendees.length) {
+      e.preventDefault();
+      showStatus('error', `참석자 ${attendees.length}명에 맞춰 음료·점심 메뉴·저녁식사 여부도 각각 ${attendees.length}개 선택해 주세요.`);
+      const target = beverages.length !== attendees.length
+        ? beverageList
+        : lunches.length !== attendees.length ? lunchList : dinnerList;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     attendeePayload.value = attendees.join(' / ');
     vehiclePayload.value = [...new Set(vehicles)].join(' / ');
+    beveragePayload.value = beverages.join(' / ');
+    lunchPayload.value = lunches.join(' / ');
+    dinnerPayload.value = dinners.join(' / ');
     submissionId = createSubmissionId();
     document.getElementById('submissionId').value = submissionId;
     submitting = true;

@@ -81,8 +81,9 @@
     document.getElementById('statTotal').textContent = data.length;
     document.getElementById('statAttendee').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.attendeeName).length, 0);
     document.getElementById('statVehicle').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.vehicleNumber).length, 0);
-    document.getElementById('statIceAmericano').textContent = data.filter(r => r.beverage === '아이스아메리카노').length;
-    document.getElementById('statLunchKinds').textContent = new Set(data.map(r => r.lunch).filter(Boolean)).size;
+    document.getElementById('statDinner').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.dinnerAttendance).filter(v => v === '참석').length, 0);
+    document.getElementById('statIceAmericano').textContent = data.reduce((sum, r) => sum + splitMultiValue(r.beverage).filter(v => v === '아이스아메리카노').length, 0);
+    document.getElementById('statLunchKinds').textContent = new Set(data.flatMap(r => splitMultiValue(r.lunch))).size;
   }
 
   function buildCompanyFilter(data) {
@@ -97,7 +98,7 @@
     const c = companyFilter.value;
     return rows.filter(r => {
       const companyOk = !c || r.company === c;
-      const haystack = [r.company, r.attendeeName, r.vehicleNumber, r.beverage, r.lunch].join(' ').toLowerCase();
+      const haystack = [r.company, r.attendeeName, r.vehicleNumber, r.beverage, r.lunch, r.dinnerAttendance].join(' ').toLowerCase();
       const searchOk = !q || haystack.includes(q);
       return companyOk && searchOk;
     });
@@ -111,8 +112,9 @@
         <td><span class="badge">${escapeHtml(r.company)}</span></td>
         <td>${renderMultiValue(r.attendeeName)}</td>
         <td>${renderMultiValue(r.vehicleNumber)}</td>
-        <td>${escapeHtml(r.beverage)}</td>
-        <td>${escapeHtml(r.lunch)}</td>
+        <td>${renderMultiValue(r.beverage)}</td>
+        <td>${renderMultiValue(r.lunch)}</td>
+        <td>${renderMultiValue(r.dinnerAttendance, '미응답')}</td>
       </tr>`).join('');
     emptyState.style.display = data.length ? 'none' : 'block';
   }
@@ -148,8 +150,8 @@
 
   csvBtn.addEventListener('click', () => {
     const data = getFilteredRows();
-    const headers = ['제출시각','소속','참석자명','차량번호','음료','점심식사'];
-    const values = data.map(r => [r.timestamp, r.company, r.attendeeName, r.vehicleNumber, r.beverage, r.lunch]);
+    const headers = ['제출시각','소속','참석자명','차량번호','음료','점심식사','저녁식사 참석여부'];
+    const values = data.map(r => [r.timestamp, r.company, r.attendeeName, r.vehicleNumber, r.beverage, r.lunch, r.dinnerAttendance]);
     const csvEscape = (v) => `"${String(v ?? '').replaceAll('"','""')}"`;
     const csv = '\uFEFF' + [headers, ...values].map(row => row.map(csvEscape).join(',')).join('\r\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });

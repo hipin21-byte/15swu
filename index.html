@@ -75,44 +75,82 @@
       </section>
 
       <section class="card">
-        <h2 class="section-title">2. 음료 선택</h2>
-        <p class="section-desc">제공받을 음료 1가지를 선택해 주세요.</p>
-        <div class="radio-grid">
-          <label class="radio-card"><input type="radio" name="beverage" value="아이스아메리카노" required> 아이스아메리카노</label>
-          <label class="radio-card"><input type="radio" name="beverage" value="Hot아메리카노"> Hot아메리카노</label>
-          <label class="radio-card"><input type="radio" name="beverage" value="아이스티"> 아이스티</label>
+        <div class="section-heading-row">
+          <div>
+            <h2 class="section-title">2. 음료 선택</h2>
+            <p class="section-desc">참석자별로 제공받을 음료를 선택해 주세요.</p>
+          </div>
+          <button id="addBeverageBtn" class="add-button" type="button" aria-label="음료 선택 항목 추가">
+            <span aria-hidden="true">＋</span> 음료 추가
+          </button>
         </div>
+        <div id="beverageList" class="selection-list" aria-live="polite">
+          <div class="selection-group">
+            <div class="selection-group-heading"><strong>음료 1</strong></div>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="beverage-choice-1" value="아이스아메리카노" required> 아이스아메리카노</label>
+              <label class="radio-card"><input type="radio" name="beverage-choice-1" value="Hot아메리카노"> Hot아메리카노</label>
+              <label class="radio-card"><input type="radio" name="beverage-choice-1" value="아이스티"> 아이스티</label>
+            </div>
+          </div>
+        </div>
+        <input id="beverage" name="beverage" type="hidden">
       </section>
 
       <section class="card">
-        <h2 class="section-title">3. 점심식사 선택</h2>
-        <p class="section-desc">점심 메뉴 1가지를 선택해 주세요.</p>
-        <div class="menu-grid">
-          <label class="menu-card">
-            <input type="radio" name="lunch" value="더덕 장어구이 바싹불고기 한상" required>
-            <span class="menu-title">더덕 장어구이 바싹불고기 한상</span>
-            <span class="menu-note">한상 메뉴</span>
-          </label>
-          <label class="menu-card">
-            <input type="radio" name="lunch" value="울릉도 오징어 석갈비 한상">
-            <span class="menu-title">울릉도 오징어 석갈비 한상</span>
-            <span class="menu-note">한상 메뉴</span>
-          </label>
-          <label class="menu-card">
-            <input type="radio" name="lunch" value="매콤낙지 석갈비 한상">
-            <span class="menu-title">매콤낙지 석갈비 한상</span>
-            <span class="menu-note">한상 메뉴</span>
-          </label>
-          <label class="menu-card">
-            <input type="radio" name="lunch" value="매콤낙지 파래불고기 한상">
-            <span class="menu-title">매콤낙지 파래불고기 한상</span>
-            <span class="menu-note">한상 메뉴</span>
-          </label>
+        <div class="section-heading-row">
+          <div>
+            <h2 class="section-title">3. 점심식사 선택</h2>
+            <p class="section-desc">참석자별로 점심 메뉴를 선택해 주세요.</p>
+          </div>
+          <button id="addLunchBtn" class="add-button" type="button" aria-label="점심 메뉴 선택 항목 추가">
+            <span aria-hidden="true">＋</span> 메뉴 추가
+          </button>
         </div>
+        <div id="lunchList" class="selection-list" aria-live="polite">
+          <div class="selection-group">
+            <div class="selection-group-heading"><strong>점심 메뉴 1</strong></div>
+            <div class="menu-grid">
+              <label class="menu-card">
+                <input type="radio" name="lunch-choice-1" value="더덕 장어구이 바싹불고기 한상" required>
+                <span class="menu-title">더덕 장어구이 바싹불고기 한상</span>
+                <span class="menu-note">한상 메뉴</span>
+              </label>
+              <label class="menu-card">
+                <input type="radio" name="lunch-choice-1" value="울릉도 오징어 석갈비 한상">
+                <span class="menu-title">울릉도 오징어 석갈비 한상</span>
+                <span class="menu-note">한상 메뉴</span>
+              </label>
+              <label class="menu-card">
+                <input type="radio" name="lunch-choice-1" value="매콤낙지 석갈비 한상">
+                <span class="menu-title">매콤낙지 석갈비 한상</span>
+                <span class="menu-note">한상 메뉴</span>
+              </label>
+              <label class="menu-card">
+                <input type="radio" name="lunch-choice-1" value="매콤낙지 파래불고기 한상">
+                <span class="menu-title">매콤낙지 파래불고기 한상</span>
+                <span class="menu-note">한상 메뉴</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <input id="lunch" name="lunch" type="hidden">
       </section>
 
       <section class="card">
-        <h2 class="section-title">4. 저녁식사 장소</h2>
+        <h2 class="section-title">4. 저녁식사 참석 여부 및 장소</h2>
+        <p class="section-desc">참석자 입력 인원수에 맞춰 각 참석자의 저녁식사 참석 여부를 선택해 주세요.</p>
+        <div id="dinnerList" class="selection-list" aria-live="polite">
+          <div class="selection-group">
+            <div class="selection-group-heading"><strong>저녁식사 1</strong></div>
+            <div class="radio-grid dinner-options">
+              <label class="radio-card"><input type="radio" name="dinner-choice-1" value="참석" required> 참석</label>
+              <label class="radio-card"><input type="radio" name="dinner-choice-1" value="불참"> 불참</label>
+            </div>
+          </div>
+        </div>
+        <input id="dinnerAttendance" name="dinnerAttendance" type="hidden">
+        <div class="location-label">저녁식사 장소</div>
         <div class="location-grid">
           <div class="info-card location-info">
             <strong>원주식당</strong>
