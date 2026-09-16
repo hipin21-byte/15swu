@@ -21,7 +21,7 @@
   const lunchPayload = document.getElementById('lunch');
   const dinnerList = document.getElementById('dinnerList');
   const dinnerPayload = document.getElementById('dinnerAttendance');
-  const MAX_ADDITIONAL_FIELDS = 100;
+  const MAX_PARTICIPANTS = 100;
 
   // 학생이 업체 부스를 방문했을 때 업체에서 학생 참여를 인증하는 참고용 코드입니다.
   const COMPANY_CODES = {
@@ -87,8 +87,8 @@
 
   function addDynamicField({ list, inputClass, labelText, placeholder, maxLength, required }) {
     const currentCount = list.querySelectorAll('.dynamic-item').length;
-    if (currentCount >= MAX_ADDITIONAL_FIELDS) {
-      showStatus('error', `${labelText}은 최대 ${MAX_ADDITIONAL_FIELDS}개까지 입력할 수 있습니다.`);
+    if (currentCount >= MAX_PARTICIPANTS) {
+      showStatus('error', `${labelText}은 최대 ${MAX_PARTICIPANTS}개까지 입력할 수 있습니다.`);
       return;
     }
 
@@ -167,8 +167,8 @@
 
   function addSelectionGroup(list, type, labelText) {
     const groups = list.querySelectorAll('.selection-group');
-    if (groups.length >= MAX_ADDITIONAL_FIELDS) {
-      showStatus('error', `${labelText}는 최대 ${MAX_ADDITIONAL_FIELDS}개까지 선택할 수 있습니다.`);
+    if (groups.length >= MAX_PARTICIPANTS) {
+      showStatus('error', `${labelText}는 최대 ${MAX_PARTICIPANTS}개까지 선택할 수 있습니다.`);
       return;
     }
 
