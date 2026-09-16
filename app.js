@@ -21,7 +21,7 @@
   const lunchPayload = document.getElementById('lunch');
   const dinnerList = document.getElementById('dinnerList');
   const dinnerPayload = document.getElementById('dinnerAttendance');
-  const MAX_ADDITIONAL_FIELDS = 10;
+  const MAX_ADDITIONAL_FIELDS = 100;
 
   // 학생이 업체 부스를 방문했을 때 업체에서 학생 참여를 인증하는 참고용 코드입니다.
   const COMPANY_CODES = {
